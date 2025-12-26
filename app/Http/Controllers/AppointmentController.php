@@ -1,12 +1,10 @@
 <?php
 
 namespace App\Http\Controllers;
-
-use App\Models\Agendamento;
-use App\Notifications\admmanicure;
+use App\Models\Agendamento; 
+use app\Notifications\admmanicure;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Notification;
 
 class AppointmentController extends Controller
 {
@@ -85,7 +83,7 @@ class AppointmentController extends Controller
         try {
             // Instanciamos a notificação e chamamos o método 'via' manualmente ou usamos notify
             // Como não temos um User model para a manicure, instanciamos a classe direto
-            (new admmanicure($appointment))->via(null);
+            (new AdmManicure($appointment))->via(null);
         } catch (\Exception $e) {
             // Ignora erro de SMS para não falhar o request
         }

@@ -9,7 +9,7 @@ use Twilio\Rest\Client;
 use App\Models\Appointment;
 use Illuminate\Support\Facades\Log;
 
-class NewBookingAdmin extends Notification
+class admmanicure extends Notification
 {
     use Queueable;
 
