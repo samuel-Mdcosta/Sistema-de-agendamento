@@ -3,13 +3,13 @@
 namespace App\Notifications;
 
 use App\Models\Agendamento;
+use App\Models\Appointment;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
 use Twilio\Rest\Client;
-use App\Models\Appointment;
 use Illuminate\Support\Facades\Log;
 
-class admmanicure extends Notification
+class AdmManicure extends Notification
 {
     use Queueable;
 
@@ -22,21 +22,22 @@ class admmanicure extends Notification
 
     public function via($notifiable)
     {
-        // Não usaremos canais padrão do Laravel, faremos envio direto no construtor ou método customizado
-        // Mas para seguir o padrão, vamos usar um canal 'custom' ou apenas chamar a lógica.
-        // Para simplificar este tutorial, vamos disparar o envio direto aqui.
+        // Envio direto via Twilio
         $this->sendTwilioSms();
-        return []; // Não salva no banco
+        return [];
     }
 
     private function sendTwilioSms()
     {
-        $sid    = env('TWILIO_SID');
-        $token  = env('TWILIO_TOKEN');
-        $from   = env('TWILIO_FROM');
-        $to     = env('MANICURE_PHONE'); // Envia para a DONA
+        $sid   = env('TWILIO_SID');
+        $token = env('TWILIO_TOKEN');
+        $from  = env('TWILIO_FROM');
+        $to    = env('MANICURE_PHONE');
 
-        $msg = "💅 Nova Agenda!\nCliente: {$this->appointment->client_name}\nData: {$this->appointment->start_time->format('d/m H:i')}\nTipo: {$this->appointment->type}";
+        $msg = "Nova agenda\n"
+            . "Cliente: {$this->appointment->client_name}\n"
+            . "Data: {$this->appointment->start_time->format('d/m H:i')}\n"
+            . "Tipo: {$this->appointment->type}";
 
         try {
             $client = new Client($sid, $token);
@@ -45,7 +46,6 @@ class admmanicure extends Notification
                 'body' => $msg
             ]);
         } catch (\Exception $e) {
-            // Logar erro se falhar, para não travar o sistema
             Log::error("Erro Twilio Admin: " . $e->getMessage());
         }
     }

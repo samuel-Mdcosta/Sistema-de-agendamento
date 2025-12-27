@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 use App\Models\Agendamento; 
-use app\Notifications\admmanicure;
+use App\Notifications\AdmManicure;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
@@ -99,13 +99,22 @@ class AppointmentController extends Controller
         })->isNotEmpty();
     }
 
-    private function checkCollisionRange($start, $end) {
-        return Agendamento::where(function($q) use ($start, $end) {
-            $q->whereBetween('start_time', [$start, $end])
-              ->orWhereBetween('end_time', [$start, $end]);
-            // Ajuste fino: Se o start for igual ao end_time de outro, não é colisão
-        })->where('start_time', '<', $end)
-          ->where('end_time', '>', $start)
-          ->exists();
+    private function checkCollisionRange($start, $end){
+        return Agendamento::where(function ($q) use ($start, $end) {
+            $q->where('start_time', '<', $end)
+            ->where('end_time', '>', $start);
+        })->exists();
     }
-}
+
+        public function index(Request $request){
+            $date = $request->query('date');
+    
+            $query = Agendamento::orderBy('start_time');
+    
+            if ($date) {
+                $query->whereDate('start_time', $date);
+            }
+    
+            return response()->json($query->get());
+        }
+    }
